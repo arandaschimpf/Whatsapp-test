@@ -1,7 +1,9 @@
 import crypto from "node:crypto";
 
+const USER_ID_PATTERN = "([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})";
+
 export function generateOtp() {
-  return crypto.randomInt(0, 1000000).toString().padStart(6, "0");
+  return crypto.randomInt(100000, 1000000).toString();
 }
 
 export function buildVerificationMessage(userId: string, otp: string) {
@@ -9,8 +11,8 @@ export function buildVerificationMessage(userId: string, otp: string) {
 }
 
 export function parseVerificationMessage(body: string) {
-  const labelledUserId = body.match(/user[\s_-]*id\s*[:=-]\s*([a-z0-9-]+)/i);
-  const labelledOtp = body.match(/\botp\b\s*[:=-]\s*(\d{4,8})/i);
+  const labelledUserId = body.match(new RegExp(`user[\s_-]*id\s*[:=-]\s*${USER_ID_PATTERN}`, "i"));
+  const labelledOtp = body.match(/\botp\b\s*[:=-]\s*(\d{6})/);
 
   if (labelledUserId?.[1] && labelledOtp?.[1]) {
     return {
@@ -19,7 +21,7 @@ export function parseVerificationMessage(body: string) {
     };
   }
 
-  const compact = body.match(/verify\s+([a-z0-9-]{8,})\s+(\d{4,8})/i);
+  const compact = body.match(new RegExp(`verify\s+${USER_ID_PATTERN}\s+(\d{6})`, "i"));
 
   if (compact?.[1] && compact?.[2]) {
     return {
