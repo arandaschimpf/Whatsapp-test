@@ -16,7 +16,7 @@ function verifyMetaSignature(signature: string | null, rawBody: string) {
   const appSecret = process.env.WHATSAPP_APP_SECRET;
 
   if (!appSecret) {
-    return true;
+    return process.env.NODE_ENV !== "production";
   }
 
   if (!signature?.startsWith("sha256=")) {
@@ -26,7 +26,11 @@ function verifyMetaSignature(signature: string | null, rawBody: string) {
   const expected = crypto.createHmac("sha256", appSecret).update(rawBody).digest("hex");
   const provided = signature.slice("sha256=".length);
 
-  return crypto.timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
+  if (provided.length !== expected.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(Buffer.from(provided, "utf8"), Buffer.from(expected, "utf8"));
 }
 
 function extractIncomingMessages(payload: unknown) {

@@ -21,6 +21,8 @@ type UserStatusResponse = {
   verifiedAt: string | null;
 };
 
+const MAX_AUTO_REFRESHES = 12;
+
 export function RegistrationFlow() {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -29,6 +31,7 @@ export function RegistrationFlow() {
   const [registration, setRegistration] = useState<RegistrationResponse | null>(null);
   const [status, setStatus] = useState<UserStatusResponse | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [autoRefreshCount, setAutoRefreshCount] = useState(0);
 
   const statusText = useMemo(() => status?.status ?? registration?.status ?? "pending", [registration, status]);
 
@@ -53,22 +56,24 @@ export function RegistrationFlow() {
   }
 
   useEffect(() => {
-    if (!registration?.userId || statusText === "verified") {
+    if (!registration?.userId || statusText === "verified" || autoRefreshCount >= MAX_AUTO_REFRESHES) {
       return;
     }
 
-    const intervalId = window.setInterval(() => {
+    const timeoutId = window.setTimeout(() => {
+      setAutoRefreshCount((currentCount) => currentCount + 1);
       void refreshStatus(registration.userId);
     }, 5000);
 
-    return () => window.clearInterval(intervalId);
-  }, [registration?.userId, statusText]);
+    return () => window.clearTimeout(timeoutId);
+  }, [autoRefreshCount, registration?.userId, statusText]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setIsSubmitting(true);
     setError(null);
     setStatus(null);
+    setAutoRefreshCount(0);
 
     try {
       const response = await fetch("/api/register", {
@@ -200,7 +205,9 @@ export function RegistrationFlow() {
               <p className={statusText === "verified" ? "mt-1 text-emerald-300" : "mt-1 text-amber-300"}>
                 {statusText === "verified"
                   ? `Verified${status?.verifiedAt ? ` at ${new Date(status.verifiedAt).toLocaleString()}` : ""}`
-                  : "Pending. Send the WhatsApp message, then wait for the webhook callback."}
+                  : autoRefreshCount >= MAX_AUTO_REFRESHES
+                    ? "Still pending. Automatic polling stopped after 1 minute; use Refresh status to check again."
+                    : "Pending. Send the WhatsApp message, then wait for the webhook callback."}
               </p>
             </div>
           </div>

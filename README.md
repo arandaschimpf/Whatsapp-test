@@ -49,7 +49,7 @@ Required variables:
 - `FIREBASE_USERS_COLLECTION`: Firestore collection name, defaults to `whatsappUsers`
 - `WHATSAPP_DESTINATION_PHONE_NUMBER`: the business phone number that receives the verification message, digits only
 - `WHATSAPP_WEBHOOK_VERIFY_TOKEN`: any random string you choose for Meta webhook verification
-- `WHATSAPP_APP_SECRET`: optional but recommended, used to validate `x-hub-signature-256`
+- `WHATSAPP_APP_SECRET`: required in production and recommended locally, used to validate `x-hub-signature-256`
 
 ### 3. Run the app
 
@@ -204,6 +204,7 @@ npm run build
 ## Notes
 
 - This demo intentionally keeps Firebase on the server only.
-- If `WHATSAPP_APP_SECRET` is set, webhook signatures are verified.
+- In production, `WHATSAPP_APP_SECRET` must be set or webhook requests will be rejected.
+- In local development, the webhook can run without `WHATSAPP_APP_SECRET`.
 - The UI polls the backend every 5 seconds after registration until the user is verified.
 - You can extend the verified user state into a real session or token once the proof-of-phone step succeeds.

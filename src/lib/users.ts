@@ -2,7 +2,7 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
 import { getDb, getUsersCollectionName } from "@/lib/firebase-admin";
 import { generateOtp } from "@/lib/otp";
-import { formatE164PhoneNumber, normalizePhoneDigits } from "@/lib/phone";
+import { normalizePhoneDigits } from "@/lib/phone";
 
 export type UserStatus = "pending" | "verified";
 
@@ -32,7 +32,7 @@ export async function createPendingUser(input: { name: string; phoneNumber: stri
   }
 
   const normalizedPhone = normalizePhoneDigits(input.phoneNumber);
-  const phoneNumber = formatE164PhoneNumber(normalizedPhone);
+  const phoneNumber = `+${normalizedPhone}`;
   const userId = crypto.randomUUID();
   const otp = generateOtp();
 
