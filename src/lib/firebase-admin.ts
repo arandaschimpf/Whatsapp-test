@@ -45,5 +45,5 @@ export function getDb() {
 }
 
 export function getUsersCollectionName() {
-  return process.env.FIREBASE_USERS_COLLECTION ?? "whatsappUsers";
+  return process.env.FIREBASE_USERS_COLLECTION ?? "whatsapp-users";
 }

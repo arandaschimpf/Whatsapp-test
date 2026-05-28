@@ -46,7 +46,7 @@ cp .env.example .env.local
 Required variables:
 
 - `FIREBASE_SERVICE_ACCOUNT_KEY`: full Firebase service account JSON serialized into one line
-- `FIREBASE_USERS_COLLECTION`: Firestore collection name, defaults to `whatsappUsers`
+- `FIREBASE_USERS_COLLECTION`: Firestore collection name, defaults to `whatsapp-users`
 - `WHATSAPP_DESTINATION_PHONE_NUMBER`: the business phone number that receives the verification message, digits only
 - `WHATSAPP_WEBHOOK_VERIFY_TOKEN`: any random string you choose for Meta webhook verification
 - `WHATSAPP_APP_SECRET`: required in production and recommended locally, used to validate `x-hub-signature-256`

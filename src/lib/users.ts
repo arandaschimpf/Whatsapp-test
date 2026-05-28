@@ -1,6 +1,6 @@
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
-import { ConfigurationError, ValidationError } from "@/lib/errors";
+import { ValidationError } from "@/lib/errors";
 import { getDb, getUsersCollectionName } from "@/lib/firebase-admin";
 import { generateOtp } from "@/lib/otp";
 import { normalizePhoneDigits } from "@/lib/phone";
@@ -36,9 +36,6 @@ export async function createPendingUser(input: { name: string; phoneNumber: stri
   const phoneNumber = `+${normalizedPhone}`;
   const userId = crypto.randomUUID();
 
-  if (!userId) {
-    throw new ConfigurationError("Unable to generate a user ID.");
-  }
   const otp = generateOtp();
 
   await getUsersCollection().doc(userId).set({
