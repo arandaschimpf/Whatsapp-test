@@ -26,11 +26,11 @@ function verifyMetaSignature(signature: string | null, rawBody: string) {
   const expected = crypto.createHmac("sha256", appSecret).update(rawBody).digest("hex");
   const provided = signature.slice("sha256=".length);
 
-  if (provided.length !== expected.length) {
+  if (provided.length !== expected.length || !/^[a-f0-9]+$/i.test(provided)) {
     return false;
   }
 
-  return crypto.timingSafeEqual(Buffer.from(provided, "utf8"), Buffer.from(expected, "utf8"));
+  return crypto.timingSafeEqual(Buffer.from(provided, "hex"), Buffer.from(expected, "hex"));
 }
 
 function extractIncomingMessages(payload: unknown) {

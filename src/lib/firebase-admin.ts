@@ -1,11 +1,13 @@
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 
+import { ConfigurationError } from "@/lib/errors";
+
 function getFirebaseCredentials() {
   const rawValue = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
   if (!rawValue) {
-    throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY is not configured.");
+    throw new ConfigurationError("FIREBASE_SERVICE_ACCOUNT_KEY is not configured.");
   }
 
   const parsedValue = JSON.parse(rawValue) as {
@@ -22,7 +24,7 @@ function getFirebaseCredentials() {
   const privateKey = (parsedValue.private_key ?? parsedValue.privateKey)?.replace(/\\n/g, "\n");
 
   if (!projectId || !clientEmail || !privateKey) {
-    throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY is missing required service account fields.");
+    throw new ConfigurationError("FIREBASE_SERVICE_ACCOUNT_KEY is missing required service account fields.");
   }
 
   return {
