@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 
 export function generateOtp() {
-  return crypto.randomInt(100000, 1000000).toString();
+  return crypto.randomInt(0, 1000000).toString().padStart(6, "0");
 }
 
 export function buildVerificationMessage(userId: string, otp: string) {

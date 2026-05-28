@@ -23,6 +23,13 @@ type UserStatusResponse = {
 
 const MAX_AUTO_REFRESHES = 12;
 
+function getCurrentStatus(
+  registration: RegistrationResponse | null,
+  status: UserStatusResponse | null,
+) {
+  return status?.status ?? registration?.status ?? "pending";
+}
+
 export function RegistrationFlow() {
   const [name, setName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -33,7 +40,7 @@ export function RegistrationFlow() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [autoRefreshCount, setAutoRefreshCount] = useState(0);
 
-  const statusText = useMemo(() => status?.status ?? registration?.status ?? "pending", [registration, status]);
+  const statusText = useMemo(() => getCurrentStatus(registration, status), [registration, status]);
 
   async function refreshStatus(userId: string) {
     setIsRefreshing(true);

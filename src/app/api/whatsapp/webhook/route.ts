@@ -16,7 +16,7 @@ function verifyMetaSignature(signature: string | null, rawBody: string) {
   const appSecret = process.env.WHATSAPP_APP_SECRET;
 
   if (!appSecret) {
-    return process.env.NODE_ENV !== "production";
+    return false;
   }
 
   if (!signature?.startsWith("sha256=")) {
